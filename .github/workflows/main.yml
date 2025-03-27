@@ -63,7 +63,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: build-output-${{ matrix.node-version }}
-        path: dist/
+        path: .next/
         retention-days: 5
         compression-level: 9 # maximum compression
         if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
