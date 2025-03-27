@@ -88,30 +88,37 @@ jobs:
         node-version: [20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: build-output-${{ matrix.node-version }}
-        path: dist/
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
-    - name: Setup test environment
-      run: |
-        npm ci
-        npm run setup-test-env
+      - name: Install pnpm
+        run: corepack enable && pnpm install --frozen-lockfile
 
-    - name: Run E2E tests
-      run: npm run test:e2e
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output-${{ matrix.node-version }}
+          path: dist/
 
-    - name: Generate test reports
-      run: npm run generate-reports
+      - name: Setup test environment
+        run: pnpm run setup-test-env
 
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results
-        path: reports/
+      - name: Run E2E tests
+        run: pnpm run test:e2e
+
+      - name: Generate test reports
+        run: pnpm run generate-reports
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: reports/
 
   security-scan:
     runs-on: ubuntu-latest
