@@ -56,8 +56,17 @@ jobs:
     - name: Run unit tests
       run: npm test
 
+    - name: Debug Workspace Before Build
+      run: ls -la ${{ github.workspace }}
+
+    - name: Clear Next.js Cache
+      run: rm -rf .next/
+
     - name: Build
-      run: npm run build
+      run: pnpm build
+
+    - name: Debug Workspace After Build
+      run: ls -la ${{ github.workspace }}
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -65,8 +74,9 @@ jobs:
         name: build-output-${{ matrix.node-version }}
         path: ${{ github.workspace }}/.next/
         retention-days: 5
-        compression-level: 9 # maximum compression
-        if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+        compression-level: 9
+        if-no-files-found: error
+
 
   test-e2e:
     needs: build
